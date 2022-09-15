@@ -1,0 +1,47 @@
+# Web server config
+server:
+  port: 8082
+  servlet:
+    context-path: /catalogue
+  compression:
+    enabled: true
+  address: 0.0.0.0
+
+client:
+  host: ${UI:http://localhost:3000}
+
+# Database config
+spring:
+  datasource:
+    url: jdbc:mariadb://${DB:localhost:3306}/${DB_SCHEMA:hoodiedb}?useSSL=false
+    username: ${DB_USER:catalogue_user}
+    password: ${DB_PASS:catalogue_pass}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: false
+
+# Logging config
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    root: INFO
+    org.springframework: INFO
+    hoodie.shop.catalogue: DEBUG
+
+# actuator configuration
+management:
+  endpoint:
+    health:
+      group:
+        custom:
+          show-components: always
+          show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'

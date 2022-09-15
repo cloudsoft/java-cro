@@ -1,0 +1,91 @@
+= Backend Native app
+
+This is a simple Spring Boot REST app, running on port 8081.
+
+== Build Native Image
+
+Install GraalVM and set it as system default.
+
+In this directory run:
+
+[source,shell script]
+----
+mvn package -Pnative -DskipTests
+#or with Maven Daemon-- default goals: `clean install`
+mvnd package -Pnative -DskipTests
+# or with maven wrapper
+./mvnw package -Pnative -DskipTests
+----
+
+This will create a natively compiled application which can be ran and invoked via the command line.
+
+Running:
+
+[source, shell]
+----
+mvn spring-boot:build-image
+# or
+
+mvn spring-boot:build-image -Dspring-boot.build-image.imageName=hoodie-backend-native:1.0
+----
+
+Create a docker container image with the native Spring Boot application. This does not currently work!!!
+
+== Run Locally
+
+*Option 1:* Run from the source. Run the link:src/main/java/io/cloudsoft/catalogue/CatalogueApplication.java[CatalogueApplication] class.
+
+*Option 2:* Run from the jar. In the target directory run:
+
+[source,shell script]
+----
+java -jar taeget/backend-native-0.0.1-SNAPSHOT.jar
+----
+Note: For Windows runs you might need to use `127.0.0.1` instead of the actual IP the Database container is listening on.
+
+If you want to point your backend to a database at a remote location run with:
+
+[source,shell script]
+----
+java -jar target/backend-native-0.0.1-SNAPSHOT.jar --DB=<domain:port>
+----
+
+If the DB argument is not provided, the database location defaults to `localhost:3306`
+
+This backend needs to configure a cors filter to accept requests from a UI. The value of the URL where the requests will be coming from is provided using the UI argument.
+
+[source,shell script]
+----
+java -jar target/backend-native-0.0.1-SNAPSHOT.jar
+----
+
+If the UI argument is not provided, the location defaults to `http://localhost:3000`.
+
+== Build the Docker image
+
+In this directory run:
+
+[source]
+----
+docker build -t hoodie-backend-native:1.0 .
+----
+
+== Start the Container
+
+Run wherever:
+
+[source]
+----
+docker run -e DB=172.17.0.3:3306 --name local-hoodie-backend-native -d -p 8082:8082 hoodie-backend-native:1.0
+----
+
+Replace the value of the `DB` value with the IP:PORT where the database is available.
+
+== Inspect IPAddress
+
+The IPAddress is to be provided as an environment variable to the frontend container.
+
+[source]
+----
+docker inspect local-hoodie-backend | grep IPAddress
+----

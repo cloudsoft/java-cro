@@ -1,0 +1,30 @@
+= Database
+
+This is a simple MariaDB database running in a container on port 3306.
+
+== Build the Database image
+
+In this directory run:
+
+[source]
+----
+docker build -t hoodie-db:1.0 .
+----
+
+== Start the Container
+
+Run wherever:
+
+[source]
+----
+docker run --name local-hoodiedb -e MARIADB_ROOT_PASSWORD=mypass -e MARIADB_USER=catalogue_user -e MARIADB_PASSWORD=catalogue_pass -e MARIADB_DATABASE=hoodiedb -d -p 3306:3306 hoodie-db:1.0
+----
+
+== Inspect IPAddress
+
+The IPAddress is to be provided as an environment variable to the backend container.
+
+[source]
+----
+docker inspect local-mariadb | grep IPAddress
+----

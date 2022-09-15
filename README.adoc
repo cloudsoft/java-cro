@@ -1,0 +1,50 @@
+= Java Cro 2022
+
+== Install Docker and Enable Kubernetes
+
+1. Install Docker Desktop, start Kubernetes on it. Use the new virtualization Framework.
+2. Check that all is ok by running the following commands:
+[source]
+----
+# show current context
+kubectl config current-context
+kubectl cluster-info
+kubectl get nodes
+# pod & others
+kubectl get pods
+kubectl describe pod hoodie-db-6f64bc9c44-xp99p
+kubectl get services
+kubectl get svc hoodie-db -o wide
+----
+
+=== Set Up the Kubernetes Dashboard
+
+Install the dashboard.
+[source]
+----
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
+----
+
+Enable access to the Dashboard:
+
+[source]
+----
+kubectl proxy
+----
+
+Access http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy[here]
+
+Create Admin User & Roles:
+
+[source]
+----
+kubectl apply -f dashboard-user.yaml
+kubectl apply -f dashboard-role.yaml
+----
+
+Get token for Dashboard authnetication
+
+[source]
+----
+kubectl -n kubernetes-dashboard create token admin-user
+----

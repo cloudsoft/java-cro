@@ -1,0 +1,27 @@
+GET http://localhost:8082/catalogue/hoodie
+Accept: application/json
+Authorization: Basic dXNlcjE6cGFzcw==
+
+###
+
+GET http://localhost:8082/catalogue/6d62d909-f957-430e-8689-b5129c0bb75e
+Accept: application/json
+Authorization: Basic dXNlcjE6cGFzcw==
+
+###
+
+GET http://localhost:8082/catalogue/tags
+Accept: application/json
+Authorization: Basic dXNlcjE6cGFzcw==
+
+###
+
+GET http://localhost:8082/catalogue/sizes
+Accept: application/json
+Authorization: Basic dXNlcjE6cGFzcw==
+
+###
+
+GET http://localhost:8082/catalogue/health
+Accept: application/json
+Authorization: Basic dXNlcjE6cGFzcw==

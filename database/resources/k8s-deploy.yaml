@@ -1,0 +1,60 @@
+---
+########################################################
+# Hoodie Shop Database Service & Deployment
+#######################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: hoodie-db
+  labels:
+    role: data-storage
+    tier: database
+    groupId: hoodie-shop
+spec:
+  selector:
+    name: hoodie-db
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: hoodie-db
+    groupId: hoodie-shop
+  name: hoodie-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: hoodie-db
+  template:
+    metadata:
+      labels:
+        name: hoodie-db
+        groupId: hoodie-shop
+    spec:
+      containers:
+        - image: hoodie-db:1.0
+          name: hoodie-db
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: mypass
+            - name: MARIADB_USER
+              value: catalogue_user
+            - name: MARIADB_PASSWORD
+              value: catalogue_pass
+            - name: MARIADB_DATABASE
+              value: hoodiedb
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
