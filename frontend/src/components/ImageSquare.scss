@@ -1,0 +1,13 @@
+.image-square-box {
+  position: relative;
+  width: 100%;
+  &:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+
+  &.circle {
+    border-radius: 0% 50%;
+  }
+}

@@ -1,0 +1,9 @@
+$cloudsoft-mint: #5BDC9E;
+$cloudsoft-greygreen: #EDF5E1;
+
+.link-wrapper {
+  background-color: $cloudsoft-greygreen;
+  &:hover {
+    background-color: $cloudsoft-mint;
+  }
+}

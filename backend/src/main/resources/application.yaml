@@ -13,7 +13,7 @@ client:
 # Database config
 spring:
   datasource:
-    url: jdbc:mariadb://${DB:localhost:3306}/${DB_SCHEMA:hoodiedb}?useSSL=false
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:hoodiedb}?useSSL=false
     username: ${DB_USER:catalogue_user}
     password: ${DB_PASS:catalogue_pass}
     driver-class-name: org.mariadb.jdbc.Driver

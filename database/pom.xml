@@ -6,16 +6,62 @@
     <parent>
         <groupId>hoodie.shop</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
-    <artifactId>database</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging/>
+    <artifactId>hoodie-db</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
     <name>Java Cro 2022 Demo :: Hoodie Shop( Database )</name>
 
     <description>Demo project for Java Cro 2022: Hoodie Shop</description>
 
     <!-- not needed , added here just so that it looks nike in IntelliJ IDEA -->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <executions>
+                    <!-- Remove existing image from local repo -->
+                    <execution>
+                        <id>docker-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>rmi</argument>
+                                <argument>hoodie-db:${project.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Building the new image -->
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}/docker-build</workingDirectory>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-t</argument>
+                                <argument>hoodie-db:${project.version}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

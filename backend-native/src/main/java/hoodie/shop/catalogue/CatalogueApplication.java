@@ -16,6 +16,7 @@ public class CatalogueApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(CatalogueApplication.class);
 
 	public static void main(String... args) throws SQLException {
+		System.setProperty("springAot", "true");
 		ApplicationContext ctx = SpringApplication.run(CatalogueApplication.class, args);
 
 		LOG.info(" .... ->> Getting data from {} ", (ctx.getBean(DataSource.class)).getConnection().getMetaData().getURL());

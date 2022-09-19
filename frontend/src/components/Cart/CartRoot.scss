@@ -1,0 +1,15 @@
+.cart-table {
+  td {
+    img {
+       height: 80px;
+    }
+    vertical-align: middle;
+  }
+  td > .btn {
+    visibility: hidden;
+  }
+
+  td:hover > .btn {
+    visibility: visible;
+  }
+}

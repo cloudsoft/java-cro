@@ -26,5 +26,8 @@ The IPAddress is to be provided as an environment variable to the backend contai
 
 [source]
 ----
-docker inspect local-mariadb | grep IPAddress
+docker inspect local-hoodiedb | grep IPAddress
 ----
+
+== Kubernetes commands
+

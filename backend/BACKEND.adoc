@@ -15,13 +15,13 @@ mvnd
 
 == Run Locally
 
-*Option 1:* Run from the source. Run the link:src/main/java/io/cloudsoft/catalogue/CatalogueApplication.java[CatalogueApplication] class.
+*Option 1:* Run from the source. Run the link:src/main/java/hoodie/shop/catalogue/CatalogueApplication.java[CatalogueApplication] class.
 
 *Option 2:* Run from the jar. In the target directory run:
 
 [source,shell script]
 ----
-java -jar catalogue-0.0.1-SNAPSHOT.jar
+java -jar catalogue-1.0.jar
 ----
 Note: For Windows runs you might need to use `127.0.0.1` instead of the actual IP the Database container is listening on.
 
@@ -33,15 +33,6 @@ java -jar target/catalogue-backend.jar --DB=<domain:port>
 ----
 
 If the DB argument is not provided, the database location defaults to `localhost:3306`
-
-This backend needs to configure a cors filter to accept requests from a UI. The value of the URL where the requests will be coming from is provided using the UI argument.
-
-[source,shell script]
-----
-java -jar target/catalogue-backend.jar
-----
-
-If the UI argument is not provided, the location defaults to `http://localhost:3000`.
 
 == Build the Docker image
 

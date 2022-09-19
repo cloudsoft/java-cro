@@ -7,8 +7,6 @@ import hoodie.shop.catalogue.repo.CartItemRepo;
 import hoodie.shop.catalogue.repo.HoodieRepo;
 import hoodie.shop.catalogue.repo.SizeRepo;
 import hoodie.shop.catalogue.repo.TagRepo;
-import hoodie.shop.catalogue.*;
-import hoodie.shop.catalogue.model.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

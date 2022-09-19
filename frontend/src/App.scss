@@ -1,0 +1,45 @@
+@use "./theme.scss";
+
+$navbar-height: 62px;
+$sidebar-width: 250px;
+
+#root {
+  text-align: center;
+  .below-header {
+    margin-top: $navbar-height;
+  }
+}
+
+.main-wrapper {
+  // needed for scrolling to happen inside this instead of #root
+  height: calc(100vh - $navbar-height);
+  overflow-y: auto;
+
+  // needed since sidebar is fixed
+  margin-left: $sidebar-width;
+}
+
+.main {
+  padding-top: 1rem;
+}
+
+.sidebar-wrapper {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  
+  padding-top: $navbar-height;
+  width: $sidebar-width;
+  @extend .bg-cloudsoft-royalblue !optional;
+  @extend .text-white;
+
+  div {
+    font-size: 1.5rem;
+    cursor: pointer;
+    &:hover {
+      color: yellow;
+    }
+  }
+}

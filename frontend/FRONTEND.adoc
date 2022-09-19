@@ -1,0 +1,111 @@
+= Getting Started with Create React App
+
+This project was bootstrapped with https://github.com/facebook/create-react-app[Create React App].
+
+== Available Scripts
+
+First time after cloning this project run:
+
+[source]
+----
+npm install
+----
+
+In the project directory, you can run:
+
+[source]
+----
+npm start
+----
+
+Runs the app in the development mode.
+Open http://localhost:3000[http://localhost:3000] to view it in the browser.
+
+The page will reload if you make edits.
+You will also see any lint errors in the console.
+
+[source]
+----
+npm test
+----
+
+Launches the test runner in the interactive watch mode.
+See the section about https://facebook.github.io/create-react-app/docs/running-tests[running tests] for more information.
+
+[source]
+----
+npm run build
+----
+
+Builds the app for production to the `build` folder.
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.
+Your app is ready to be deployed!
+
+See the section about https://facebook.github.io/create-react-app/docs/deployment[deployment] for more information.
+
+
+[source]
+----
+npm run eject
+----
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+== Learn More
+
+You can learn more in the https://facebook.github.io/create-react-app/docs/getting-started[Create React App documentation].
+
+To learn React, check out the https://reactjs.org[React documentation].
+
+== Build the Docker image
+
+In this directory run:
+
+[source]
+----
+docker build -t hoodie-frontend:1.0 .
+----
+
+== Start the Container
+
+Run wherever:
+
+[source]
+----
+docker run -e REACT_APP_BACKEND_URL=http://172.17.0.3:8082 --name local-hoodie-frontend -d -p 3000:3000 hoodie-frontend:1.0
+----
+
+Replace the value of the `REACT_APP_BACKEND_URL` value with the host+port where the backend is available. Note that in order for the built site to have access to ENV variables, their name needs to start with `REACT_APP_...`.
+
+== Inspect IPAddress
+
+The IPAddress is to be provided as an environment variable to the frontend container.
+
+[source]
+----
+docker inspect local-hoodie-frontend | grep IPAddress
+----
+
+
+== Install to Artifactory
+
+Currently we manually install to artifactory.
+
+Run this locally:
+
+    mkdir app
+    cp -r package* public src tsconfig.json app/
+    tar cvfz catalogue-frontend.tar.gz app/
+
+Then upload the resulting catalogue-frontend.tar.gz to https://artifactory.cloudsoftcorp.com/artifactory/webapp/#/artifacts/browse/tree/General/libs-release-local/hoodie/shop/packs/catalogue-frontend.tar.gz and delete your local evidence.
+
+It is this file which is used by the TF automation.
+

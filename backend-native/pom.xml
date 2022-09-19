@@ -11,7 +11,7 @@
 
 	<groupId>hoodie-shop</groupId>
 	<artifactId>backend-native</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>Java Cro 2022 Demo :: Hoodie Shop( Native Backend )</name>
 
 	<properties>
@@ -90,6 +90,13 @@
 							<buildpack>gcr.io/paketo-buildpacks/java:6.34.0</buildpack>
 						</buildpacks>
 					</image>
+					<environmentVariables>
+						<DB_HOST/>
+						<DB_PORT/>
+						<DB_USER/>
+						<DB_PASS/>
+						<DB_SCHEMA/>
+					</environmentVariables>
 				</configuration>
 			</plugin>
 

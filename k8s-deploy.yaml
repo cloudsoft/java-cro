@@ -1,3 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hoodie-backend-native
+  labels:
+    role: rest-api
+    tier: backend
+    groupId: hoodie-shop
+spec:
+  selector:
+    name: hoodie-backend-native
+  ports:
+    - port: 8082
+      targetPort: 8082
+      protocol: TCP
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hoodie-backend-native
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: hoodie-backend-native
+  template:
+    metadata:
+      labels:
+        name: hoodie-backend-native
+    spec:
+      containers:
+        - name: hoodie-backend-native
+          image: hoodie-bck-native:1.0
+          ports:
+            - containerPort: 8082
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: hoodie-db
+              #value: localhost
+            - name: DB_PORT
+              value: "3306"
 ---
 ########################################################
 # Hoodie Shop Database Service & Deployment

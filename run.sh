@@ -4,41 +4,88 @@ echo "Java Cro 2022 Hoodie Shop Demo"
 
 case "${1}" in
 1)
-  echo " >> step 1: create database image & start container"
-  cd database/docker-build
-  docker build -t hoodie-db:1.0 .
-  cd ../..
+  echo " >>> step 1: create database image"
+  # using docker
+  # cd database/docker-build
+  # docker build -t hoodie-db:1.0 .
+  # cd ../..
+  # using maven
+  cd database
+  mvn install
+  cd ..
+  ;;
+2)
+  echo " >>> step 2: start database container"
   docker run --name local-hoodie-db -e MARIADB_ROOT_PASSWORD=mypass -e MARIADB_USER=catalogue_user -e MARIADB_PASSWORD=catalogue_pass -e MARIADB_DATABASE=hoodiedb -d -p 3306:3306 hoodie-db:1.0
   echo "Database available at ..."
   docker inspect local-hoodie-db | grep IPAddress
   ;;
-2)
-  echo " >> step 2: destroy database container"
-  docker stop local-hoodie-db && docker rm local-hoodie-db
-  ;;
 3)
-  echo " >> step 3: deploy database on local Kubernetes cluster"
-  kubectl delete namespace hoodie-shop
-  kubectl create namespace hoodie-shop
-  kubectl config set-context --current --namespace=hoodie-shop
-
-  kubectl apply -f database/resources/k8s-deploy.yaml
-
-  export NODE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-db)
-  export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo "Database available at ... mariadb://${NODE_IP}:${NODE_PORT}"
+  echo " >>> step 3: destroy database container"
+  docker stop local-hoodie-db && docker rm local-hoodie-db
   ;;
 4)
   echo " >> step 4: destroy database on local Kubernetes cluster"
   kubectl delete namespace hoodie-shop
   ;;
 5)
-  echo " >> step 5: building the backend"
+  echo " >> step 5: build & start the backend"
   cd backend
+  . /Users/iuliana/.sdkman/bin/sdkman-init.sh
   mvn
   cd ..
-  echo "Starting the app "
+  echo "Starting the app ..."
+  java -version
   java -jar backend/target/backend.jar
+  ;;
+6)
+  echo " >> step 6: build the NATIVE backend"
+  cd backend-native
+  . /Users/iuliana/.sdkman/bin/sdkman-init.sh
+  mvn package -Pnative -DskipTests
+  cd ..
+  ;;
+7)
+  echo " >> step 7: start the NATIVE backend"
+  java -version # to make sure we are using GraalVM here
+  ./backend-native/target/backend-native   # --DB_HOST=localhost --DB_PORT=31413
+  ;;
+8)
+  echo " >> step 8: build the frontend"
+  cd frontend
+  # npm install
+  export REACT_APP_BACKEND_URL=http://localhost:8082; npm run build
+  cd ..
+  ;;
+9)
+  echo " >> step 9: start the frontend"
+  cd frontend
+  npm start
+  cd ..
+  ;;
+# 2 , 7 & 9 - to run app locally
+10)
+  echo " >>> step 10: create custom NATIVE image"
+  cd backend-native
+  mvn spring-boot:build-image -Dspring-boot.build-image.imageName=hoodie-bck-native:1.0
+  cd ..
+  ;;
+11)
+  # requires image hoodie-db:1.0 , run step 1
+  echo " >>> step 11: deploy database on local Kubernetes cluster"
+  kubectl delete namespace hoodie-shop
+  kubectl create namespace hoodie-shop
+  kubectl config set-context --current --namespace=hoodie-shop
+
+  kubectl apply -f k8s-deploy.yaml
+
+  export DB_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-db)
+  export DB_HOST=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-db)
+  echo "Database available at ... jdbc:mariadb://${DB_HOST}:${DB_PORT}/hoodiedb"
+
+  export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend-native)
+  export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend-native)
+  echo "Spring Boot app available at ... http://${BCK_URL}:${BCK_PORT}/catalogue/hoodie"
   ;;
 esac
 

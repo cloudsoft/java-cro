@@ -1,0 +1,23 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/mixins";
+$theme-colors: (
+  // BS stock colors, needed otherwise ignored, feel free to improve
+  "primary": #0d6efd,
+  "secondary": #6c757d,
+  "success": #198754,
+  "danger": #dc3545,
+  "light": #f8f9fa,
+  "dark": #212529,
+
+  // Cloudsoft primary
+  "cloudsoft-slateblue": #102752,
+  "cloudsoft-royalblue": #105CD9,
+  "cloudsoft-mint": #5BDC9E,
+  "cloudsoft-greygreen": #EDF5E1,
+
+  // Cloudsoft secondary
+  "cloudsoft-junglegreen": #24A27D,
+  "cloudsoft-goldmustard": #E4C580,
+);
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/bootstrap";
