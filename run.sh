@@ -71,8 +71,14 @@ case "${1}" in
   cd ..
   ;;
 11)
+  echo " >>> step 11: create frontend image"
+  cd frontend
+  docker build -t hoodie-frontend:1.0 .
+  cd ..
+  ;;
+12)
   # requires image hoodie-db:1.0 , run step 1
-  echo " >>> step 11: deploy database on local Kubernetes cluster"
+  echo " >>> step 12: deploy database on local Kubernetes cluster"
   kubectl delete namespace hoodie-shop
   kubectl create namespace hoodie-shop
   kubectl config set-context --current --namespace=hoodie-shop
@@ -86,6 +92,10 @@ case "${1}" in
   export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend-native)
   export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend-native)
   echo "Spring Boot app available at ... http://${BCK_URL}:${BCK_PORT}/catalogue/hoodie"
+
+  export UI_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-frontend)
+  export UI_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-frontend)
+  echo "Ui app available at ... http://${UI_URL}:${UI_PORT}/catalog"
   ;;
 esac
 
