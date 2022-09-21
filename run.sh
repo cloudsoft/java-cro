@@ -78,12 +78,13 @@ case "${1}" in
   ;;
 12)
   # requires image hoodie-db:1.0 , run step 1
-  echo " >>> step 12: deploy database on local Kubernetes cluster"
+  # requires image hoodie-bck-native:1.0 , run step 10
+  echo " >>> step 12: app & database on local Kubernetes cluster"
   kubectl delete namespace hoodie-shop
   kubectl create namespace hoodie-shop
   kubectl config set-context --current --namespace=hoodie-shop
 
-  kubectl apply -f k8s-deploy.yaml
+  kubectl apply -f kubernetes/k8s-app.yaml
 
   export DB_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-db)
   export DB_HOST=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-db)
@@ -92,10 +93,21 @@ case "${1}" in
   export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend-native)
   export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend-native)
   echo "Spring Boot app available at ... http://${BCK_URL}:${BCK_PORT}/catalogue/hoodie"
+  ;;
+13)
+  # requires image hoodie-frontend:1.0 , run step 11
+  echo " >>> step 13: UI on local Kubernetes cluster"
+
+  kubectl config set-context --current --namespace=hoodie-shop
+  kubectl apply -f kubernetes/k8s-ui.yaml
 
   export UI_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-frontend)
   export UI_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-frontend)
   echo "Ui app available at ... http://${UI_URL}:${UI_PORT}/catalog"
+  ;;
+14)
+  echo " >>> step 14: Tear down the hoodie-shop namespace"
+  kubectl delete namespace hoodie-shop
   ;;
 esac
 

@@ -5,7 +5,6 @@ EXPOSE 3000
 
 # Copy files as a non-root user. The `node` user is built in the Node image.
 WORKDIR /usr/src/app
-RUN echo "REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}" > .env.production
 RUN chown node:node ./
 USER node
 
@@ -19,8 +18,4 @@ COPY ./src ./src
 
 # build and serve the frontend; bring in production now
 ENV NODE_ENV production
-RUN npm run build
-RUN echo "Attempting to start app with backend ${REACT_APP_BACKEND_URL}"
 CMD ["npm", "run", "serve"]
-
-# CMD ["tail", "-f", "/dev/null"]
