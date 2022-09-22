@@ -6,8 +6,7 @@ kind: Service
 metadata:
   name: hoodie-backend-native
   labels:
-    role: rest-api
-    tier: backend
+    role: hoodie-backend-service
     groupId: hoodie-shop
 spec:
   selector:
@@ -29,8 +28,7 @@ spec:
       name: hoodie-backend-native
   template:
     metadata:
-      labels:
-        name: hoodie-backend-native
+      name: hoodie-backend-native
     spec:
       containers:
         - name: hoodie-backend-native
@@ -82,9 +80,7 @@ spec:
       name: hoodie-db
   template:
     metadata:
-      labels:
-        name: hoodie-db
-        groupId: hoodie-shop
+      name: hoodie-db
     spec:
       containers:
         - image: hoodie-db:1.0

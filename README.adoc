@@ -12,7 +12,8 @@ kubectl cluster-info
 kubectl get nodes
 # pod & others
 kubectl get pods
-kubectl describe pod hoodie-db-6f64bc9c44-xp99p
+kubectl describe pod hoodie-db-xx
+kubectl describe service hoodie-db-xx
 kubectl get services
 kubectl get svc hoodie-db -o wide
 ----
