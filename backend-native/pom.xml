@@ -106,6 +106,7 @@
 				<version>${spring-native.version}</version>
 				<configuration>
 					<removeJmxSupport>true</removeJmxSupport>
+					<removeXmlSupport>true</removeXmlSupport>
 					<removeYamlSupport>true</removeYamlSupport>
 					<removeSpelSupport>true</removeSpelSupport>
 					<verify>true</verify>

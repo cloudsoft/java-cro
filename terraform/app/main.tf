@@ -7,7 +7,6 @@ resource "kubernetes_namespace_v1" "hoodie-shop" {
 
     labels = {
       demo = "hoodie-db-namespace"
-      groupId: "hoodie-shop"
     }
 
     name = "hoodie-shop"

@@ -73,6 +73,5 @@ yarn-debug.log*
 yarn-error.log*
 
 node_modules
-terraform
 .terraform*
 terraform.tfstate*

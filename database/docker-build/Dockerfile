@@ -1,4 +1,4 @@
-FROM mariadb:latest
+FROM mariadb:10.10-rc
 
 COPY scripts /docker-entrypoint-initdb.d/
 

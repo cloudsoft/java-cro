@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @EnableScheduling
-@SpringBootApplication
+@SpringBootApplication(proxyBeanMethods = false)
 public class CatalogueApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(CatalogueApplication.class);
 

@@ -78,8 +78,8 @@ case "${1}" in
   ;;
 12)
   # requires image hoodie-db:1.0 , run step 1
-  # requires image hoodie-bck-native:1.0 , run step 10
-  echo " >>> step 12: app & database on local Kubernetes cluster"
+  # requires image hoodie-backend:1.0 , run step 10
+  echo " >>> step 12: Deploy backend & database on local Kubernetes cluster"
   kubectl delete namespace hoodie-shop
   kubectl create namespace hoodie-shop
   kubectl config set-context --current --namespace=hoodie-shop
@@ -90,13 +90,13 @@ case "${1}" in
   export DB_HOST=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-db)
   echo "Database available at ... jdbc:mariadb://${DB_HOST}:${DB_PORT}/hoodiedb"
 
-  export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend-native)
-  export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend-native)
+  export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend)
+  export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend)
   echo "Spring Boot app available at ... http://${BCK_URL}:${BCK_PORT}/catalogue/hoodie"
   ;;
 13)
   # requires image hoodie-frontend:1.0 , run step 11
-  echo " >>> step 13: UI on local Kubernetes cluster"
+  echo " >>> step 13: Deploy UI on local Kubernetes cluster"
 
   kubectl config set-context --current --namespace=hoodie-shop
   kubectl apply -f kubernetes/k8s-ui.yaml
@@ -108,6 +108,36 @@ case "${1}" in
 14)
   echo " >>> step 14: Tear down the hoodie-shop namespace"
   kubectl delete namespace hoodie-shop
+  ;;
+15)
+  echo " >>> step 15: Using terraform to deploy backend, database & ui on local Kubernetes cluster"
+  cd terraform/app
+  echo "     >> Deploying backend & database"
+  terraform apply --auto-approve
+  terraform apply --auto-approve # needed to get correct ingress values
+
+  # getting backend url for react to forward to
+  kubectl config set-context --current --namespace=hoodie-shop
+  export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend)
+  export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend)
+  export TF_VAR_backend_location="http://${BCK_URL}:${BCK_PORT}"
+
+  cd ../ui
+  echo "backend_location = \"${TF_VAR_backend_location}\"" > terraform.tfvars
+  echo "     >> Deploying ui"
+  terraform apply --auto-approve
+  terraform apply --auto-approve # needed to get correct ingress values
+  cd ../..
+  ;;
+16)
+  echo " >>> step 15: Destroy terraform deployment"
+  cd terraform/ui
+  echo "     >> Destroing ui"
+  terraform destroy --auto-approve
+  cd ../app
+  echo "     >> Destroing app & db"
+  terraform destroy --auto-approve
+  cd ../..
   ;;
 esac
 

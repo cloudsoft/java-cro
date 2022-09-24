@@ -4,39 +4,43 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hoodie-backend-native
+  namespace: hoodie-shop
+  name: hoodie-backend
   labels:
     role: hoodie-backend-service
-    groupId: hoodie-shop
 spec:
   selector:
-    name: hoodie-backend-native
+    name: hoodie-backend
+  type: NodePort
   ports:
     - port: 8082
       targetPort: 8082
       protocol: TCP
-  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hoodie-backend-native-deployment
+  namespace: hoodie-shop
+  name: hoodie-backend
+  labels:
+    role: hoodie-backend-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: hoodie-backend-native
+      name: hoodie-backend
   template:
     metadata:
-      name: hoodie-backend-native
+      labels:
+        name: hoodie-backend
     spec:
       containers:
-        - name: hoodie-backend-native
-          image: hoodie-bck-native:1.0
+        - name: hoodie-backend
+          image: hoodie-backend:1.0
           resources:
             requests:
-              cpu: 250m  # 500 milliCPU = 1/1000 of 1 CPU
-              memory: 250Mi #  200 mebibytes
+              cpu: 1
+              memory: 1Gi
           ports:
             - containerPort: 8082
               protocol: TCP
@@ -54,24 +58,22 @@ kind: Service
 metadata:
   name: hoodie-db
   labels:
-    role: data-storage
-    tier: database
-    groupId: hoodie-shop
+    role: hoodie-db-service
 spec:
   selector:
     name: hoodie-db
+  type: NodePort
   ports:
     - port: 3306
       targetPort: 3306
       protocol: TCP
-  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: hoodie-shop
   labels:
-    name: hoodie-db
-    groupId: hoodie-shop
+    role: hoodie-db-deployment
   name: hoodie-db
 spec:
   replicas: 1
@@ -80,7 +82,8 @@ spec:
       name: hoodie-db
   template:
     metadata:
-      name: hoodie-db
+      labels:
+        name: hoodie-db
     spec:
       containers:
         - image: hoodie-db:1.0
