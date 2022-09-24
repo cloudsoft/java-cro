@@ -20,6 +20,9 @@
         <module>backend</module>
         <module>backend-native</module>
         <module>frontend</module>
+        <module>kubernetes</module>
+        <module>terraform</module>
+        <module>brooklyn</module>
     </modules>
 
 </project>
