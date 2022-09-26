@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo "...Deleting .brooklyn dir"
+rm -rf ~/.brooklyn
+echo "...Deleting brooklyn/data"
+rm -rf ~/.work-brooklyn/brooklyn/brooklyn-dist/karaf/apache-brooklyn/target/assembly/data
+
+echo "Adding personal configurations"
+
+echo "
+
+# terraform for both
+brooklyn.external.terraform=org.apache.brooklyn.core.config.external.InPlaceExternalConfigSupplier
+brooklyn.external.terraform.login.user=iulianacosmina
+
+# terraform configuration for k8s local
+brooklyn.external.terraform.local.database.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/local-database.zip
+brooklyn.external.terraform.local.backend.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/local-backend.zip
+brooklyn.external.terraform.local.frontend.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/local-frontend.zip
+
+# terraform configuration for AWS EKS
+brooklyn.external.terraform.aws.credential=${AWS_CREDENTIAL}
+brooklyn.external.terraform.aws.secret=${AWS_KEY}
+brooklyn.external.terraform.aws.database.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/aws-database.zip
+brooklyn.external.terraform.aws.backend.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/aws-backend.zip
+brooklyn.external.terraform.aws.frontend.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/aws-frontend.zip
+" >> ~/.work-brooklyn/brooklyn/brooklyn-dist/karaf/apache-brooklyn/target/assembly/etc/brooklyn.cfg
+
+echo "Restarting Brooklyn (in debug mode)..."
+cd ~/.work-brooklyn/brooklyn/
+. /Users/iuliana/.sdkman/bin/sdkman-init.sh
+cd  ~/.work-brooklyn/brooklyn/brooklyn-dist/karaf/apache-brooklyn/target/assembly/bin
+./karaf debug

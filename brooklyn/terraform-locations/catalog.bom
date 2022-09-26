@@ -1,0 +1,20 @@
+brooklyn.catalog:
+  bundle: terraform.locations
+  version: 0.1.0-SNAPSHOT
+  iconUrl: classpath://icons/hoodie-shop.png
+  publish:
+    name: Cloud Locations
+
+  items:
+  #--------- LOCATIONS -----------------------
+    - id: terraform-local
+      itemType: location
+      item:
+        type: localhost
+        name: Kubernetes Cluster (Local)
+        iconUrl: classpath://icons/local-k8s.png
+        brooklyn.config:
+          loginUser: $brooklyn:external("terraform", "login.user") # if needed
+          namespace: java-cro # if needed
+
+  # ------------- TODO add AWS EKS location

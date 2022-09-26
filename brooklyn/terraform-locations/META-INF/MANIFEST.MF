@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-SymbolicName: terraform.locations
+Bundle-Version: 0.1.0.SNAPSHOT
+Archiver-Version: Plexus Archiver
+Built-By: iulianacosmina
+Implementation-Vendor-Id: io.cloudsoft.brooklyn
+Bundle-DocURL: http://www.apache.org/
+Bundle-Name: Terraform Locations
+Bundle-Description: Terraform Locations
+Bundle-ManifestVersion: 2
+Bundle-Vendor: The Apache Software Foundation
+Brooklyn-Feature-Name: Terraform Locations
+Specification-Version: 0.1.0-SNAPSHOT

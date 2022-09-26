@@ -42,5 +42,5 @@ spec:
               protocol: TCP
           env:
             - name: REACT_APP_BACKEND_URL
-              value: http://localhost:30406
+              value: http://localhost:30700
 ---

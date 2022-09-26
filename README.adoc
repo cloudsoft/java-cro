@@ -10,6 +10,7 @@
 kubectl config current-context
 kubectl cluster-info
 kubectl get nodes
+kubectl get namespaces
 # pod & others
 kubectl get pods
 kubectl describe pod hoodie-db-xx
@@ -24,6 +25,7 @@ Install the dashboard.
 [source]
 ----
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
+
 ----
 
 Enable access to the Dashboard:
