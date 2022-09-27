@@ -17,4 +17,4 @@ brooklyn.catalog:
           loginUser: $brooklyn:external("terraform", "login.user") # if needed
           namespace: java-cro # if needed
 
-  # ------------- TODO add AWS EKS location
+  # ------------- TODO add AWS EKS location (maybe ?! - we might not need it)
