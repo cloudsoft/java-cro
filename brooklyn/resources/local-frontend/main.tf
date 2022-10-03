@@ -64,11 +64,21 @@ resource "kubernetes_deployment_v1" "hoodie-frontend-deployment" {
           }
 
           liveness_probe {
-            tcp_socket {
-              port = "3000"
+            http_get {
+              path = "/catalog"
+              port = 3000
             }
-            initial_delay_seconds = 20
-            period_seconds = 50
+            failure_threshold = 1
+            initial_delay_seconds = 45  # the frontend needs to be built so yeap... this takes a while
+            period_seconds = 10
+          }
+          readiness_probe {
+            http_get {
+              path = "/catalog"
+              port = 3000
+            }
+            failure_threshold = 1
+            period_seconds = 1
           }
         }
       }

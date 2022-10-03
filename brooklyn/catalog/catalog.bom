@@ -1,0 +1,6 @@
+brooklyn.catalog:
+  bundle: hoodie.shop.app
+  version: 0.0.1-SNAPSHOT # version of this blueprint.
+  items:
+  - classpath://simple-types/local-k8s-types.bom
+  - classpath://simple-types/aws-eks-types.bom

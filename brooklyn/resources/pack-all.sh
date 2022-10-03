@@ -9,4 +9,4 @@ for dir in "${dirs[@]}"; do
   cd $dirPath
   zip -r "${dirPath}.zip" ./*
 done
-echo "Here are your terraform deployments, but uploading them to Artifactory requires your able fingers."
+echo "Here are your terraform deployments, but uploading them to a remote server (if necessary) requires your able fingers."

@@ -1,5 +1,5 @@
 brooklyn.catalog:
-  bundle: terraform.locations
+  bundle: terraform.location
   version: 0.1.0-SNAPSHOT
   iconUrl: classpath://icons/hoodie-shop.png
   publish:

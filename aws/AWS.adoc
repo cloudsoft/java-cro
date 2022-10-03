@@ -122,7 +122,7 @@ Create the namespace:
 kubectl create namespace java-cro
 ----
 
-Deploy the demo using the `aws-java-cro.yaml` file.
+Deploy the demo using the `aws-java-cro-verbose.yaml` file.
 
 Check database is working, get the load balancer address to access it:
 

@@ -80,11 +80,21 @@ resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
           }
 
           liveness_probe {
-            tcp_socket {
-              port = "8082"
+            http_get {
+              path = "/catalogue/health"
+              port = 8082
             }
-            initial_delay_seconds = 20
-            period_seconds = 50
+            failure_threshold = 1
+            initial_delay_seconds = 45 # the app starts fast, the container thought... nope
+            period_seconds = 10
+          }
+          readiness_probe {
+            http_get {
+              path = "/catalogue/health"
+              port = 8082
+            }
+            failure_threshold = 1
+            period_seconds = 1
           }
         }
       }

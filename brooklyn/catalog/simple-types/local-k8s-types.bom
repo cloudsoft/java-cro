@@ -1,0 +1,150 @@
+brooklyn.catalog:
+  version: 0.0.1-SNAPSHOT
+  iconUrl: classpath://icons/hoodie-shop.png
+  publish:
+    name: Local K8S Hoodie Shop Types
+    description: Items specific to various Hoodie App tier for a local K8S.
+
+  items:
+  # Terraform custom type for creating a Hoodie MariaDB container
+  - id: local-database-tf
+    item:
+      type: terraform
+      name: 'Hoodie Shop :: Database'
+      iconUrl: classpath://icons/hoodie-db.png
+      brooklyn.config:
+        tf.search: 'true'
+        tf.execution.mode: ssh
+        tf.configuration.url: $brooklyn:external("terraform", "local.database.url")
+        tf_var.service_type: "NodePort"
+        tf_var.image_version: "1.0"
+        tf_var.hoodie_db_namespace: $brooklyn:location().config("namespace")
+        tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
+      brooklyn.initializers:
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: db.host
+            description: Extracts the external host where the Database is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-db --namespace=${NAMESPACE_NAME}
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: db.port
+            description: Extracts the external port where the Database is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-db --namespace=${NAMESPACE_NAME}
+      brooklyn.enrichers:
+        # publish the URL as a sensor; the GUI will pick this up (main.uri)
+        - type: org.apache.brooklyn.enricher.stock.Transformer
+          brooklyn.config:
+            uniqueTag: url-generator
+            enricher.triggerSensors:
+              - $brooklyn:sensor("db.host")
+              - $brooklyn:sensor("db.port")
+            enricher.targetSensor: $brooklyn:sensor("main.uri")
+            enricher.targetValue:
+              $brooklyn:formatString:
+                - "jdbc:mariadb://%s:%s/hoodiedb"
+                - $brooklyn:attributeWhenReady("db.host")
+                - $brooklyn:attributeWhenReady("db.port")
+
+  # Terraform custom type for creating a Hoodie Backend container
+  - id: local-backend-tf
+    item:
+      type: terraform
+      name: 'Hoodie Shop :: Backend'
+      iconUrl: classpath://icons/hoodie-backend.png
+      brooklyn.config:
+        tf.search: 'true'
+        tf.execution.mode: ssh
+        tf.configuration.url: $brooklyn:external("terraform", "local.backend.url")
+        tf_var.service_type: "NodePort"
+        tf_var.image_version: "1.0"
+        tf_var.hoodie_backend_namespace: $brooklyn:location().config("namespace")
+        tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
+        shell.env:
+          TF_VAR_hoodie_db_host: $brooklyn:config("hoodiedb_url")
+          TF_VAR_hoodie_db_port: $brooklyn:config("hoodiedb_port")
+      brooklyn.initializers:
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: backend.host
+            description: Extracts the external host where the Backend is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-backend --namespace=${NAMESPACE_NAME}
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: backend.port
+            description: Extracts the external port where the Backend is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-backend --namespace=${NAMESPACE_NAME}
+      brooklyn.enrichers:
+        # publish the URL as a sensor; the GUI will pick this up (main.uri)
+        - type: org.apache.brooklyn.enricher.stock.Transformer
+          brooklyn.config:
+            uniqueTag: url-generator
+            enricher.triggerSensors:
+              - $brooklyn:sensor("backend.host")
+              - $brooklyn:sensor("backend.port")
+            enricher.targetSensor: $brooklyn:sensor("main.uri")
+            enricher.targetValue:
+              $brooklyn:formatString:
+                - "http://%s:%s/catalogue/health"
+                - $brooklyn:attributeWhenReady("backend.host")
+                - $brooklyn:attributeWhenReady("backend.port")
+  # Terraform custom type for creating a Hoodie Frontend container
+  - id: local-frontend-tf
+    item:
+      type: terraform
+      name: 'Hoodie Shop :: Frontend'
+      iconUrl: classpath://icons/hoodie-frontend.png
+      brooklyn.config:
+        tf.search: 'true'
+        tf.execution.mode: ssh
+        tf.configuration.url: $brooklyn:external("terraform", "local.frontend.url")
+        tf_var.service_type: "NodePort"
+        tf_var.image_version: "1.0"
+        tf_var.hoodie_frontend_namespace: $brooklyn:location().config("namespace")
+        tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
+        shell.env:
+          TF_VAR_hoodie_backend_host: $brooklyn:config("hoodie_backend_url")
+          TF_VAR_hoodie_backend_port: $brooklyn:config("hoodie_backend_port")
+      brooklyn.initializers:
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: frontend.host
+            description: Extracts the external host where the Frontend is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-frontend --namespace=${NAMESPACE_NAME}
+        - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+          brooklyn.config:
+            name: frontend.port
+            description: Extracts the external port where the Frontend is available (using kubectl)
+            targetType: string
+            shell.env:
+              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+            command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-frontend --namespace=${NAMESPACE_NAME}
+      brooklyn.enrichers:
+        # publish the URL as a sensor; the GUI will pick this up (main.uri)
+        - type: org.apache.brooklyn.enricher.stock.Transformer
+          brooklyn.config:
+            uniqueTag: url-generator
+            enricher.triggerSensors:
+              - $brooklyn:sensor("frontend.host")
+              - $brooklyn:sensor("frontend.port")
+            enricher.targetSensor: $brooklyn:sensor("main.uri")
+            enricher.targetValue:
+              $brooklyn:formatString:
+                - "http://%s:%s/catalog"
+                - $brooklyn:attributeWhenReady("frontend.host")
+                - $brooklyn:attributeWhenReady("frontend.port")

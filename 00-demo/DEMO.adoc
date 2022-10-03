@@ -24,7 +24,7 @@
     # generate token
     kubectl -n kubernetes-dashboard create token admin-user --duration=48h
 
-6. Create deployable in the composer - or paste it from `local-java-cro.yaml`  and show in the composer & deploy.
+6. Create deployable in the composer - or paste it from `local-java-cro-verbose.yaml`  and show in the composer & deploy.
 7. Show Dashboard, show Apache Brooklyn summary, activities logs and sensors
 8. Trigger the stop effector & watch it all disappear.
 
@@ -36,7 +36,7 @@
     kubectl config get-contexts
 
     #  change to EKS context
-    kubectl config use-context arn:aws:eks:eu-west-2:{AWS_ACCOUNT}:cluster/java-cro-cluster
+    kubectl config use-context arn:aws:eks:eu-west-2:${AWS_ACCOUNT}:cluster/java-cro-cluster
 
     # show current context
     kubectl config current-context
@@ -49,6 +49,6 @@
     # generate token
     kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
 
-3. Create deployable in the composer - - or paste it from `aws-java-cro.yaml` and show in the composer & deploy.
+3. Create deployable in the composer - - or paste it from `aws-java-cro-verbose.yaml` and show in the composer & deploy.
 4. Show Dashboard, show Apache Brooklyn summary, activities logs and sensors
 5. Trigger the stop effector & watch it all disappear.
