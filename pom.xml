@@ -22,8 +22,9 @@
         <module>frontend</module>
         <module>kubernetes</module>
         <module>terraform</module>
-        <module>brooklyn</module>
+        <!--<module>brooklyn</module>-->
         <module>aws</module>
+        <module>00-demo</module>
     </modules>
 
 </project>

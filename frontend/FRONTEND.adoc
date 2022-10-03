@@ -95,17 +95,3 @@ docker inspect local-hoodie-frontend | grep IPAddress
 ----
 
 
-== Install to Artifactory
-
-Currently we manually install to artifactory.
-
-Run this locally:
-
-    mkdir app
-    cp -r package* public src tsconfig.json app/
-    tar cvfz catalogue-frontend.tar.gz app/
-
-Then upload the resulting catalogue-frontend.tar.gz to https://artifactory.cloudsoftcorp.com/artifactory/webapp/#/artifacts/browse/tree/General/libs-release-local/hoodie/shop/packs/catalogue-frontend.tar.gz and delete your local evidence.
-
-It is this file which is used by the TF automation.
-

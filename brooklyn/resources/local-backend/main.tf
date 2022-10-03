@@ -11,7 +11,7 @@ resource "kubernetes_service_v1" "hoodie-backend-service" {
     selector = {
       name = kubernetes_deployment_v1.hoodie-backend-deployment.metadata.0.name
     }
-    type = "NodePort"
+    type = var.service_type
     port {
       port = 8082
       target_port = "8082"
@@ -48,7 +48,7 @@ resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
 
       spec {
         container {
-          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-backend:latest"
+          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-backend:${var.image_version}" // not really needed here since native images are build only for amd64, but kept for consistency
           #image = "hoodie-backend:1.0"
           image_pull_policy = "IfNotPresent"
           name  = "hoodie-backend"

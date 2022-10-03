@@ -11,7 +11,7 @@ resource "kubernetes_service_v1" "hoodie-frontend-service" {
     selector = {
       name = kubernetes_deployment_v1.hoodie-frontend-deployment.metadata.0.name
     }
-    type = "NodePort"
+    type = var.service_type
     port {
       port = 3000
       target_port = "3000"
@@ -48,7 +48,7 @@ resource "kubernetes_deployment_v1" "hoodie-frontend-deployment" {
 
       spec {
         container {
-          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-frontend:latest"
+          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-frontend:${var.image_version}"
           #image = "hoodie-frontend:1.0"
           image_pull_policy = "IfNotPresent"
           name  = "hoodie-frontend"

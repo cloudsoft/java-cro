@@ -16,7 +16,7 @@ kubectl config get-contexts
 kubectl config use-context docker-desktop
 
 # change to EKS context
-kubectl config use-context arn:aws:eks:eu-west-2:304295633295:cluster/java-cro-cluster
+kubectl config use-context arn:aws:eks:eu-west-2:${AWS_ACCOUNT}:cluster/java-cro-cluster
 
 kubectl cluster-info
 kubectl get nodes

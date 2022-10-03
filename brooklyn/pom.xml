@@ -12,7 +12,7 @@
     <groupId>hoodie.shop</groupId>
     <artifactId>hoodie-shop</artifactId>
     <version>1.0</version>
-    <packaging>pom</packaging>
+    <packaging>bundle</packaging>
     <name>Java Cro 2022 Demo :: Hoodie Shop( Brooklyn )</name>
 
     <description>Demo project for Java Cro 2022: Hoodie Shop</description>

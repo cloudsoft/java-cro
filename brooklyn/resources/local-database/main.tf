@@ -11,7 +11,7 @@ resource "kubernetes_service_v1" "hoodie-db-service" {
     selector = {
       "name" : kubernetes_deployment_v1.hoodie-db-deployment.metadata.0.name
     }
-    type = "NodePort"
+    type = var.service_type
     port {
       port = 3306
       target_port = "3306"
@@ -48,7 +48,7 @@ resource "kubernetes_deployment_v1" "hoodie-db-deployment" {
 
       spec {
         container {
-          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-db:latest"
+          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-db:${var.image_version}"
           #image = "hoodie-db:1.0"
           image_pull_policy = "IfNotPresent"
           name  = "hoodie-db"
