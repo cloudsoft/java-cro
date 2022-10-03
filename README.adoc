@@ -8,6 +8,16 @@
 ----
 # show current context
 kubectl config current-context
+
+# get all contexts
+kubectl config get-contexts
+
+#  change to local context
+kubectl config use-context docker-desktop
+
+# change to EKS context
+kubectl config use-context arn:aws:eks:eu-west-2:304295633295:cluster/java-cro-cluster
+
 kubectl cluster-info
 kubectl get nodes
 kubectl get namespaces
@@ -51,3 +61,5 @@ Get token for Dashboard authnetication
 ----
 kubectl -n kubernetes-dashboard create token admin-user --duration=48h
 ----
+
+kubectl port-forward $(kubectl get pod -l "app=hoodie-db" -o jsonpath={.items[0].metadata.name}) 30934

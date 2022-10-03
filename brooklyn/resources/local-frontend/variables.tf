@@ -9,3 +9,5 @@ variable "hoodie_backend_port" {
 variable "hoodie_backend_host" {
   type = string
 }
+
+variable "aws_account" {}

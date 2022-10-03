@@ -7,8 +7,6 @@ output "hoodie_ui_location_internal" {
 }
 
 // run 'terraform apply' again and remove comment from the next outputs
-
-
 output "hoodie_ui_location_external" {
   value = "http://${kubernetes_service_v1.hoodie-frontend-service.status.0.load_balancer.0.ingress.0.hostname}:${kubernetes_service_v1.hoodie-frontend-service.spec.0.port.0.node_port}/catalog"
 }

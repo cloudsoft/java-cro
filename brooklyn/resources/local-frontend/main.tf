@@ -48,7 +48,9 @@ resource "kubernetes_deployment_v1" "hoodie-frontend-deployment" {
 
       spec {
         container {
-          image = "hoodie-frontend:1.0"
+          image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-frontend:latest"
+          #image = "hoodie-frontend:1.0"
+          image_pull_policy = "IfNotPresent"
           name  = "hoodie-frontend"
 
           env {

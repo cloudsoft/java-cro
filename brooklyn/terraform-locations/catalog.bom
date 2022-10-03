@@ -14,7 +14,5 @@ brooklyn.catalog:
         name: Kubernetes Cluster (Local)
         iconUrl: classpath://icons/local-k8s.png
         brooklyn.config:
-          loginUser: $brooklyn:external("terraform", "login.user") # if needed
-          namespace: java-cro # if needed
-
-  # ------------- TODO add AWS EKS location (maybe ?! - we might not need it)
+          awsAccount: $brooklyn:external("terraform", "aws.account")
+          namespace: java-cro

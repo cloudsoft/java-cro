@@ -1,0 +1,15 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: java-cro-cluster
+  region: eu-west-2
+  version: "1.23"
+  tags: { scope: "java-cro-2022" }
+
+nodeGroups:
+  - name: ng-1
+    labels: { role: workers }
+    instanceType: t3.large
+    desiredCapacity: 2
+    volumeSize: 80

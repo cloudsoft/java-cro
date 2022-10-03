@@ -19,6 +19,7 @@ brooklyn.external.terraform.local.backend.url=file:///Users/iuliana/.work-demo/j
 brooklyn.external.terraform.local.frontend.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/local-frontend.zip
 
 # terraform configuration for AWS EKS
+brooklyn.external.terraform.aws.account=${AWS_ACCOUNT}
 brooklyn.external.terraform.aws.credential=${AWS_CREDENTIAL}
 brooklyn.external.terraform.aws.secret=${AWS_KEY}
 brooklyn.external.terraform.aws.database.url=file:///Users/iuliana/.work-demo/java-cro/brooklyn/resources/aws-database.zip

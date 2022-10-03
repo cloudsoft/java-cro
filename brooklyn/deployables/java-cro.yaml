@@ -11,12 +11,13 @@ services:
       tf.execution.mode: ssh
       tf.configuration.url: $brooklyn:external("terraform", "local.database.url")
       tf_var.hoodie_db_namespace: $brooklyn:location().config("namespace")
+      tf_var.aws_account: $brooklyn:location().config("awsAccount")
     brooklyn.initializers:
       - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
         brooklyn.config:
           name: db.host
           description: Extracts the external host where the Database is available (using kubectl)
-          targetType: string
+          targetType: string # default type , we support maps
           shell.env:
             NAMESPACE_NAME: $brooklyn:location().config("namespace")
           command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-db --namespace=${NAMESPACE_NAME}
@@ -37,6 +38,7 @@ services:
       tf.execution.mode: ssh
       tf.configuration.url: $brooklyn:external("terraform", "local.backend.url")
       tf_var.hoodie_backend_namespace: $brooklyn:location().config("namespace")
+      tf_var.aws_account: $brooklyn:location().config("awsAccount")
       tf_var.hoodie_db_host: $brooklyn:entity("hoodie-db").attributeWhenReady("tf.output.hoodie_db_host_internal")
       tf_var.hoodie_db_port: $brooklyn:entity("hoodie-db").attributeWhenReady("tf.output.hoodie_db_port_internal")
     brooklyn.initializers:
@@ -79,6 +81,7 @@ services:
       tf.execution.mode: ssh
       tf.configuration.url: $brooklyn:external("terraform", "local.frontend.url")
       tf_var.hoodie_frontend_namespace: $brooklyn:location().config("namespace")
+      tf_var.aws_account: $brooklyn:location().config("awsAccount")
       tf_var.hoodie_backend_host: $brooklyn:entity("hoodie-backend").attributeWhenReady("backend.host")
       tf_var.hoodie_backend_port: $brooklyn:entity("hoodie-backend").attributeWhenReady("backend.port")
     brooklyn.initializers:
