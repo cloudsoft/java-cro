@@ -86,6 +86,28 @@ brooklyn.catalog:
               shell.env:
                 NAMESPACE_NAME: $brooklyn:location().config("namespace")
               command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-backend --namespace=${NAMESPACE_NAME}
+          - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+            brooklyn.config:
+              name: actuator.jvm.memory.used
+              description: The amount of used memory(extracted every 5s from Actuator metrics)
+              targetType: string
+              period: 5s
+              suppressDuplicates: true
+              onlyIfServiceUp: true
+              shell.env:
+                ACTUATOR_URL: $brooklyn:attributeWhenReady("actuator.uri")
+              command: curl -s  ${ACTUATOR_URL}/metrics/jvm.memory.used | jq '.measurements[0] .value'| awk '{ print $1 / (1024*1024) " MB"}'
+          - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+            brooklyn.config:
+              name: actuator.process.cpu.usage
+              description: The recent cpu usage for the JVM process(extracted every 5s from Actuator metrics)
+              targetType: string
+              period: 5s
+              suppressDuplicates: true
+              onlyIfServiceUp: true
+              shell.env:
+                ACTUATOR_URL: $brooklyn:attributeWhenReady("actuator.uri")
+              command: curl -s  ${ACTUATOR_URL}/metrics/process.cpu.usage | jq '.measurements[0] .value' | awk '{ print $1 * 100  " %CPU"  }'
         brooklyn.enrichers:
           # publish the URL as a sensor; the GUI will pick this up (main.uri)
           - type: org.apache.brooklyn.enricher.stock.Transformer
@@ -98,6 +120,19 @@ brooklyn.catalog:
               enricher.targetValue:
                 $brooklyn:formatString:
                   - "http://%s:%s/catalogue/health"
+                  - $brooklyn:attributeWhenReady("backend.host")
+                  - $brooklyn:attributeWhenReady("tf.output.hoodie_backend_port_internal")
+          # publish the Actuator URL
+          - type: org.apache.brooklyn.enricher.stock.Transformer
+            brooklyn.config:
+              uniqueTag: url-generator
+              enricher.triggerSensors:
+                - $brooklyn:sensor("backend.host")
+                - $brooklyn:sensor("tf.output.hoodie_backend_port_internal")
+              enricher.targetSensor: $brooklyn:sensor("actuator.uri")
+              enricher.targetValue:
+                $brooklyn:formatString:
+                  - "http://%s:%s/catalogue/actuator"
                   - $brooklyn:attributeWhenReady("backend.host")
                   - $brooklyn:attributeWhenReady("tf.output.hoodie_backend_port_internal")
     # Terraform custom type for creating a Hoodie Frontend container

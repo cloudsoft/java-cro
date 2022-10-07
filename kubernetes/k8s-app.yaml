@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: hoodie-shop
+  namespace: java-cro
   name: hoodie-backend
   labels:
     role: hoodie-backend-service
@@ -20,7 +20,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: hoodie-shop
+  namespace: java-cro
   name: hoodie-backend
   labels:
     role: hoodie-backend-deployment
@@ -49,6 +49,19 @@ spec:
               value: hoodie-db
             - name: DB_PORT
               value: "3306"
+          livenessProbe:
+            httpGet:
+              path: /catalogue/health
+              port: 8082
+            failureThreshold: 1
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /catalogue/health
+              port: 8082
+            failureThreshold: 1
+            periodSeconds: 1
 ---
 ########################################################
 # Hoodie Shop Database Service & Deployment
@@ -71,7 +84,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: hoodie-shop
+  namespace: java-cro
   labels:
     role: hoodie-db-deployment
   name: hoodie-db
@@ -103,6 +116,11 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 3306
-            initialDelaySeconds: 15
-            periodSeconds: 20
+            initialDelaySeconds: 20
+            periodSeconds: 50
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            failureThreshold: 1
+            periodSeconds: 1
 ---

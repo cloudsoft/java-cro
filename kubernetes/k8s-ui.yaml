@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: hoodie-shop
+  namespace: java-cro
   name: hoodie-frontend
   labels:
     role: hoodie-frontend-service
@@ -20,7 +20,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: hoodie-shop
+  namespace: java-cro
   name: hoodie-frontend
   labels:
     role: hoodie-frontend-deployment
@@ -42,5 +42,18 @@ spec:
               protocol: TCP
           env:
             - name: REACT_APP_BACKEND_URL
-              value: http://localhost:30700
+              value: http://localhost:32642
+          livenessProbe:
+            httpGet:
+              path: /catalog
+              port: 3000
+            failureThreshold: 1
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /catalog
+              port: 3000
+            failureThreshold: 1
+            periodSeconds: 1
 ---

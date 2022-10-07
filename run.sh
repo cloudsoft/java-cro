@@ -80,9 +80,9 @@ case "${1}" in
   # requires image hoodie-db:1.0 , run step 1
   # requires image hoodie-backend:1.0 , run step 10
   echo " >>> step 12: Deploy backend & database on local Kubernetes cluster"
-  kubectl delete namespace hoodie-shop
-  kubectl create namespace hoodie-shop
-  kubectl config set-context --current --namespace=hoodie-shop
+  kubectl delete namespace java-cro
+  kubectl create namespace java-cro
+  kubectl config set-context --current --namespace=java-cro
 
   kubectl apply -f kubernetes/k8s-app.yaml
 
@@ -91,6 +91,8 @@ case "${1}" in
   echo "Database available at ... jdbc:mariadb://${DB_HOST}:${DB_PORT}/hoodiedb"
 
   export BCK_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-backend)
+  # update the ui config to point at the right backend
+  sed -i -e "s/:[0-9]\{5\}/:${BCK_PORT}/g" kubernetes/k8s-ui.yaml
   export BCK_URL=$(kubectl get -o jsonpath="{.status.loadBalancer.ingress[0].hostname}" services hoodie-backend)
   echo "Spring Boot app available at ... http://${BCK_URL}:${BCK_PORT}/catalogue/hoodie"
   ;;
@@ -98,7 +100,7 @@ case "${1}" in
   # requires image hoodie-frontend:1.0 , run step 11
   echo " >>> step 13: Deploy UI on local Kubernetes cluster"
 
-  kubectl config set-context --current --namespace=hoodie-shop
+  kubectl config set-context --current --namespace=java-cro
   kubectl apply -f kubernetes/k8s-ui.yaml
 
   export UI_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services hoodie-frontend)
@@ -106,8 +108,8 @@ case "${1}" in
   echo "Ui app available at ... http://${UI_URL}:${UI_PORT}/catalog"
   ;;
 14)
-  echo " >>> step 14: Tear down the hoodie-shop namespace"
-  kubectl delete namespace hoodie-shop
+  echo " >>> step 14: Tear down the java-cro namespace"
+  kubectl delete namespace java-cro
   ;;
 15)
   echo " >>> step 15: Using terraform to deploy backend, database & ui on local Kubernetes cluster"

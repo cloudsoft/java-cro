@@ -2,6 +2,11 @@
 
 == Running on local Kubernetes Cluster running on Docker
 
+Deploy kubernetes version - point out that you do not know when the app is ready, even if the containers are started and URLs available.
+Deploy terraform version - point out that terraform is slow to pick up kubernetes URL, need to run apply twice.
+
+And then ... blow their minds ;)
+
 1. Explain Apache Brooklyn configuration, show the repo
 2. Show the location definition, explain it & add it to the catalog
 3. Show CAMP types, create the bundle and add it to the catalog
@@ -24,8 +29,8 @@
     # generate token
     kubectl -n kubernetes-dashboard create token admin-user --duration=48h
 
-6. Create deployable in the composer - or paste it from `local-java-cro-verbose.yaml`  and show in the composer & deploy.
-7. Show Dashboard, show Apache Brooklyn summary, activities logs and sensors
+6. Create deployable in the composer - or paste it from `local-java-cro-simple.yaml`  and show in the composer & deploy.
+7. Show Dashboard, show Apache Brooklyn summary, activities logs and sensors. Show the actuator sensors and do the stress test.
 8. Trigger the stop effector & watch it all disappear.
 
 == Running on AWS EKS Cluster running on Docker
@@ -52,3 +57,18 @@
 3. Create deployable in the composer - - or paste it from `aws-java-cro-verbose.yaml` and show in the composer & deploy.
 4. Show Dashboard, show Apache Brooklyn summary, activities logs and sensors
 5. Trigger the stop effector & watch it all disappear.
+
+
+== Stress test
+
+Point out the change in memory and CPU consumption sensors
+
+[source]
+----
+# n = total number of request, c = number of concurrent request
+ab -n 1000 -c 100 http://localhost:32151/catalogue/hoodie
+
+# or on EKS - ELBs might be up slower
+ab -n 1000 -c 100  http://aa0d212c9bc3149c3ad1d8d748aac71f-1130749095.eu-west-2.elb.amazonaws.com:8082/catalogue/hoodie
+----
+

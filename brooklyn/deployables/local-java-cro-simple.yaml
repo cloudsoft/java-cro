@@ -1,4 +1,4 @@
-name: 'Hoodie Shop :: App'
+name: 'Local :: Hoodie Shop :: App'
 location: 'terraform-local:0.1.0-SNAPSHOT'
 iconUrl: https://github.com/cloudsoft/demos/raw/master/icons/hoodie-shop.png
 services:
