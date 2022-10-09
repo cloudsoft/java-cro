@@ -1,7 +1,7 @@
 resource "kubernetes_service_v1" "hoodie-backend-service" {
   metadata {
     namespace = var.hoodie_backend_namespace
-    name = "hoodie-backend"
+    name = "hoodie-backend-${var.suffix}"
 
     labels = {
       role = "hoodie-backend-service"
@@ -23,7 +23,7 @@ resource "kubernetes_service_v1" "hoodie-backend-service" {
 resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
   metadata {
     namespace = var.hoodie_backend_namespace
-    name = "hoodie-backend"
+    name = "hoodie-backend-${var.suffix}"
 
     labels = {
       role = "hoodie-backend-deployment"
@@ -35,14 +35,14 @@ resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
 
     selector {
       match_labels = {
-        name = "hoodie-backend"
+        name = "hoodie-backend-${var.suffix}"
       }
     }
 
     template {
       metadata {
         labels = {
-          name = "hoodie-backend"
+          name = "hoodie-backend-${var.suffix}"
         }
       }
 
@@ -51,7 +51,7 @@ resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
           image = "${var.aws_account}.dkr.ecr.eu-west-2.amazonaws.com/hoodie-backend:${var.image_version}" // not really needed here since native images are build only for amd64, but kept for consistency
           #image = "hoodie-backend:1.0"
           image_pull_policy = "IfNotPresent"
-          name  = "hoodie-backend"
+          name = "hoodie-backend-${var.suffix}"
 
           env {
             name = "DB_HOST"
@@ -85,7 +85,7 @@ resource "kubernetes_deployment_v1" "hoodie-backend-deployment" {
               port = 8082
             }
             failure_threshold = 1
-            initial_delay_seconds = 45 # the app starts fast, the container thought... nope
+            initial_delay_seconds = 55 # the app starts fast, the container though... nope
             period_seconds = 10
           }
           readiness_probe {

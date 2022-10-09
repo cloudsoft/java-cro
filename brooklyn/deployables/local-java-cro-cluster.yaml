@@ -1,0 +1,50 @@
+name: 'Local :: Hoodie Shop :: App'
+location: 'terraform-local:0.1.0-SNAPSHOT'
+iconUrl: https://github.com/cloudsoft/demos/raw/master/icons/hoodie-shop.png
+services:
+  - type: local-database-tf
+    id: db
+    name: 'Hoodie Shop :: Database'
+    iconUrl: https://github.com/cloudsoft/amp-demos-artifacts/raw/master/icons/fabric-db.png
+
+  - type: org.apache.brooklyn.entity.group.DynamicCluster
+    id: backend
+    name: 'Hoodie Shop :: Backend Cluster'
+    brooklyn.config:
+      cluster.initial.size: 2
+      dynamiccluster.memberspec:
+        $brooklyn:entitySpec:
+          type: local-backend-tf
+          name: 'Hoodie Shop :: Backend'
+          brooklyn.config:
+            hoodiedb_url: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_host_internal")
+            hoodiedb_port: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_port_internal")
+    # these two make sure we use the first backend that becomes available in the cluster, and propagate its values to the parent
+    brooklyn.enrichers:
+      - type: org.apache.brooklyn.enricher.stock.Aggregator
+        brooklyn.config:
+          enricher.sourceSensor: backend.host
+          enricher.targetSensor: backend.host
+          enricher.transformation.untyped: first
+      - type: org.apache.brooklyn.enricher.stock.Aggregator
+        brooklyn.config:
+          enricher.sourceSensor: backend.port
+          enricher.targetSensor: backend.port
+          enricher.transformation.untyped: first
+
+  - type: local-frontend-tf
+    id: frontend
+    name: 'Hoodie Shop :: Frontend'
+    iconUrl: https://github.com/cloudsoft/amp-demos-artifacts/raw/master/icons/fabric-frontend.png
+    brooklyn.config:
+      hoodie_backend_url: $brooklyn:entity("backend").attributeWhenReady("backend.host")
+      hoodie_backend_port: $brooklyn:entity("backend").attributeWhenReady("backend.port")
+
+  - type: org.apache.brooklyn.entity.group.DynamicGroup
+    name: K8s Deployments
+    brooklyn.config:
+      dynamicgroup.entityfilter:
+        $brooklyn:object:
+          type: terraform-predicate-resource-type
+          constructor.args:
+            - "kubernetes_deployment_v1"

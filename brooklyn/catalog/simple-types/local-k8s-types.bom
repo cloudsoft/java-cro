@@ -69,6 +69,7 @@ brooklyn.catalog:
         shell.env:
           TF_VAR_hoodie_db_host: $brooklyn:config("hoodiedb_url")
           TF_VAR_hoodie_db_port: $brooklyn:config("hoodiedb_port")
+          TF_VAR_suffix: $brooklyn:attributeWhenReady("entity.id")
       brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
@@ -77,7 +78,8 @@ brooklyn.catalog:
             targetType: string
             shell.env:
               NAMESPACE_NAME: $brooklyn:location().config("namespace")
-            command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-backend --namespace=${NAMESPACE_NAME}
+              SERVICE_NAME: $brooklyn:attributeWhenReady("tf.output.hoodie_backend_service_name")
+            command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services ${SERVICE_NAME} --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
             name: backend.port
@@ -85,7 +87,8 @@ brooklyn.catalog:
             targetType: string
             shell.env:
               NAMESPACE_NAME: $brooklyn:location().config("namespace")
-            command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-backend --namespace=${NAMESPACE_NAME}
+              SERVICE_NAME: $brooklyn:attributeWhenReady("tf.output.hoodie_backend_service_name")
+            command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services ${SERVICE_NAME} --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
             name: actuator.jvm.memory.used
@@ -95,7 +98,7 @@ brooklyn.catalog:
             suppressDuplicates: true
             onlyIfServiceUp: true
             shell.env:
-              ACTUATOR_URL: $brooklyn:attributeWhenReady("actuator.uri")
+              ACTUATOR_URL: $brooklyn:attributeWhenReady("main.uri")
             command: curl -s  ${ACTUATOR_URL}/metrics/jvm.memory.used | jq '.measurements[0] .value'| awk '{ print $1 / (1024*1024) " MB"}'
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
@@ -106,10 +109,10 @@ brooklyn.catalog:
             suppressDuplicates: true
             onlyIfServiceUp: true
             shell.env:
-              ACTUATOR_URL: $brooklyn:attributeWhenReady("actuator.uri")
+              ACTUATOR_URL: $brooklyn:attributeWhenReady("main.uri")
             command: curl -s  ${ACTUATOR_URL}/metrics/process.cpu.usage | jq '.measurements[0] .value' | awk '{ print $1 * 100  " %CPU"  }'
       brooklyn.enrichers:
-        # publish the Actuator URL
+        # publish the Actuator URL; the GUI will pick this up (main.uri)
         - type: org.apache.brooklyn.enricher.stock.Transformer
           brooklyn.config:
             uniqueTag: url-generator
