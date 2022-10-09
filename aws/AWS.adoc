@@ -132,3 +132,11 @@ export DB_HOST=$(kubectl get service/hoodie-db --namespace=java-cro |  awk {'pri
 ----
 
 Check connection on: `${DB_HOST}:3306`
+
+== Clean up
+
+If you need to delete images from AWS ECR
+[source]
+----
+aws ecr batch-delete-image --repository-name ${REPO_NAME} --image-ids imageTag=1.0 --region eu-west-2
+----

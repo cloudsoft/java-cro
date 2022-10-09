@@ -109,7 +109,7 @@ brooklyn.catalog:
                 ACTUATOR_URL: $brooklyn:attributeWhenReady("actuator.uri")
               command: curl -s  ${ACTUATOR_URL}/metrics/process.cpu.usage | jq '.measurements[0] .value' | awk '{ print $1 * 100  " %CPU"  }'
         brooklyn.enrichers:
-          # publish the URL as a sensor; the GUI will pick this up (main.uri)
+          # publish the Actuator URL; the GUI will pick this up (main.uri)
           - type: org.apache.brooklyn.enricher.stock.Transformer
             brooklyn.config:
               uniqueTag: url-generator
@@ -117,19 +117,6 @@ brooklyn.catalog:
                 - $brooklyn:sensor("backend.host")
                 - $brooklyn:sensor("tf.output.hoodie_backend_port_internal")
               enricher.targetSensor: $brooklyn:sensor("main.uri")
-              enricher.targetValue:
-                $brooklyn:formatString:
-                  - "http://%s:%s/catalogue/health"
-                  - $brooklyn:attributeWhenReady("backend.host")
-                  - $brooklyn:attributeWhenReady("tf.output.hoodie_backend_port_internal")
-          # publish the Actuator URL
-          - type: org.apache.brooklyn.enricher.stock.Transformer
-            brooklyn.config:
-              uniqueTag: url-generator
-              enricher.triggerSensors:
-                - $brooklyn:sensor("backend.host")
-                - $brooklyn:sensor("tf.output.hoodie_backend_port_internal")
-              enricher.targetSensor: $brooklyn:sensor("actuator.uri")
               enricher.targetValue:
                 $brooklyn:formatString:
                   - "http://%s:%s/catalogue/actuator"
@@ -169,6 +156,15 @@ brooklyn.catalog:
               shell.env:
                 NAMESPACE_NAME: $brooklyn:location().config("namespace")
               command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-frontend --namespace=${NAMESPACE_NAME}
+          ### this sensor right here lets you know when the LB is active and the UI is reachable, because AWS is slow ;)
+          - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+            brooklyn.config:
+              name: application.ready
+              shell.env:
+                UI_URL: $brooklyn:attributeWhenReady("main.uri")
+              command: if curl -s "${UI_URL}" > /dev/null ; then echo "READY" ;else echo "NOY READY" ; fi
+              period: 5s
+              targetType: String
         brooklyn.enrichers:
           # publish the URL as a sensor; the GUI will pick this up (main.uri)
           - type: org.apache.brooklyn.enricher.stock.Transformer

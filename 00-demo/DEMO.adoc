@@ -66,9 +66,9 @@ Point out the change in memory and CPU consumption sensors
 [source]
 ----
 # n = total number of request, c = number of concurrent request
-ab -n 1000 -c 100 http://localhost:32151/catalogue/hoodie
+ab -n 1000 -c 100 http://localhost:31352/catalogue/hoodie
 
 # or on EKS - ELBs might be up slower
-ab -n 1000 -c 100  http://aa0d212c9bc3149c3ad1d8d748aac71f-1130749095.eu-west-2.elb.amazonaws.com:8082/catalogue/hoodie
+ab -n 1000 -c 100  http://a0247b40be405418f9caf791e9f97653-643004427.eu-west-2.elb.amazonaws.com:8082/catalogue/hoodie
 ----
 
