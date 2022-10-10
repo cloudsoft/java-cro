@@ -3,11 +3,11 @@ output "namespace_name" {
 }
 
 output "hoodie_frontend_location_internal" {
-  value = "http://${kubernetes_service_v1.hoodie-frontend-service.metadata.0.name}:${kubernetes_service_v1.hoodie-frontend-service.spec.0.port.0.port}/catalogue/hoodie"
+  value = "http://${kubernetes_service_v1.hoodie_frontend_service.metadata.0.name}:${kubernetes_service_v1.hoodie_frontend_service.spec.0.port.0.port}/catalogue/hoodie"
 }
 
 output "hoodie_frontend_port_internal" {
-  value = kubernetes_service_v1.hoodie-frontend-service.spec.0.port.0.port
+  value = kubernetes_service_v1.hoodie_frontend_service.spec.0.port.0.port
 }
 
 // run 'terraform apply' again and remove comment from the next outputs

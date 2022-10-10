@@ -1,11 +1,23 @@
 name: 'AWS :: Hoodie Shop :: Clustered App'
 location: 'terraform-local:0.1.0-SNAPSHOT'
 iconUrl: https://github.com/cloudsoft/demos/raw/master/icons/hoodie-shop.png
+
+brooklyn.config:
+  exposing.service.type: "LoadBalancer"
+  container.image.version: "1.1" # image built for linux/amd64
+
 services:
+  - type: namespace-tf
+    id: namespace
+    name: 'Hoodie Shop :: Namespace'
+
   - type: eks-database-tf
     id: db
     name: 'Hoodie Shop :: Database'
-    iconUrl: https://github.com/cloudsoft/amp-demos-artifacts/raw/master/icons/fabric-db.png
+    brooklyn.config:
+      tf_var.hoodie_db_namespace: $brooklyn:entity("namespace").attributeWhenReady("tf.output.namespace_name")
+      tf_var.service_type: $brooklyn:parent().config("exposing.service.type")
+      tf_var.image_version: $brooklyn:parent().config("container.image.version")
 
   - type: org.apache.brooklyn.entity.group.DynamicCluster
     id: backend
@@ -17,8 +29,12 @@ services:
           type: eks-backend-tf
           name: 'Hoodie Shop :: Backend'
           brooklyn.config:
-            hoodiedb_url: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_host_internal")
-            hoodiedb_port: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_port_internal")
+            # brooklyn configuration for Terraform
+            tf_var.hoodie_backend_namespace: $brooklyn:entity("namespace").attributeWhenReady("tf.output.namespace_name")
+            tf_var.service_type: $brooklyn:parent().config("exposing.service.type")
+            tf_var.image_version: $brooklyn:parent().config("container.image.version")
+            tf_var.hoodie_db_host: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_host_internal")
+            tf_var.hoodie_db_port: $brooklyn:entity("db").attributeWhenReady("tf.output.hoodie_db_port_internal")
     # these two make sure we use the first backend that becomes available in the cluster, and propagate its values to the parent
     brooklyn.enrichers:
       - type: org.apache.brooklyn.enricher.stock.Aggregator
@@ -37,8 +53,11 @@ services:
     name: 'Hoodie Shop :: Frontend'
     iconUrl: https://github.com/cloudsoft/amp-demos-artifacts/raw/master/icons/fabric-frontend.png
     brooklyn.config:
-      hoodie_backend_url: $brooklyn:entity("backend").attributeWhenReady("backend.host")
-      hoodie_backend_port: $brooklyn:entity("backend").attributeWhenReady("backend.port")
+      tf_var.hoodie_frontend_namespace: $brooklyn:entity("namespace").attributeWhenReady("tf.output.namespace_name")
+      tf_var.service_type: $brooklyn:parent().config("exposing.service.type")
+      tf_var.image_version: $brooklyn:parent().config("container.image.version")
+      tf_var.hoodie_backend_host: $brooklyn:entity("backend").attributeWhenReady("backend.host")
+      tf_var.hoodie_backend_port: $brooklyn:entity("backend").attributeWhenReady("backend.port")
 
   - type: org.apache.brooklyn.entity.group.DynamicGroup
     name: K8s Deployments
@@ -48,3 +67,11 @@ services:
           type: terraform-predicate-resource-type
           constructor.args:
             - "kubernetes_deployment_v1"
+  - type: org.apache.brooklyn.entity.group.DynamicGroup
+    name: K8s Backend Services
+    brooklyn.config:
+      dynamicgroup.entityfilter:
+        $brooklyn:object:
+          type: terraform-predicate-resource-name
+          constructor.args:
+            - "hoodie_backend_service"

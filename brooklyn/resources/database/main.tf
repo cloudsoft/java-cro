@@ -1,4 +1,4 @@
-resource "kubernetes_service_v1" "hoodie-db-service" {
+resource "kubernetes_service_v1" "hoodie_db_service" {
   metadata {
     namespace = var.hoodie_db_namespace
     name = "hoodie-db"
@@ -9,7 +9,7 @@ resource "kubernetes_service_v1" "hoodie-db-service" {
   }
   spec {
     selector = {
-      "name" : kubernetes_deployment_v1.hoodie-db-deployment.metadata.0.name
+      "name" : kubernetes_deployment_v1.hoodie_db_deployment.metadata.0.name
     }
     type = var.service_type
     port {
@@ -20,7 +20,7 @@ resource "kubernetes_service_v1" "hoodie-db-service" {
   }
 }
 
-resource "kubernetes_deployment_v1" "hoodie-db-deployment" {
+resource "kubernetes_deployment_v1" "hoodie_db_deployment" {
   metadata {
     namespace = var.hoodie_db_namespace
     name = "hoodie-db"

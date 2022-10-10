@@ -16,9 +16,6 @@ brooklyn.catalog:
         tf.search: 'true'
         tf.execution.mode: ssh
         tf.configuration.url: $brooklyn:external("terraform", "local.database.url")
-        tf_var.service_type: "NodePort"
-        tf_var.image_version: "1.0"
-        tf_var.hoodie_db_namespace: $brooklyn:location().config("namespace")
         tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
       brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
@@ -27,7 +24,7 @@ brooklyn.catalog:
             description: Extracts the external host where the Database is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
             command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-db --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
@@ -35,7 +32,7 @@ brooklyn.catalog:
             description: Extracts the external port where the Database is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
             command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-db --namespace=${NAMESPACE_NAME}
       brooklyn.enrichers:
         # publish the URL as a sensor; the GUI will pick this up (main.uri)
@@ -62,13 +59,8 @@ brooklyn.catalog:
         tf.search: 'true'
         tf.execution.mode: ssh
         tf.configuration.url: $brooklyn:external("terraform", "local.backend.url")
-        tf_var.service_type: "NodePort"
-        tf_var.image_version: "1.0"
-        tf_var.hoodie_backend_namespace: $brooklyn:location().config("namespace")
         tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
         shell.env:
-          TF_VAR_hoodie_db_host: $brooklyn:config("hoodiedb_url")
-          TF_VAR_hoodie_db_port: $brooklyn:config("hoodiedb_port")
           TF_VAR_suffix: $brooklyn:attributeWhenReady("entity.id")
       brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
@@ -77,7 +69,7 @@ brooklyn.catalog:
             description: Extracts the external host where the Backend is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
               SERVICE_NAME: $brooklyn:attributeWhenReady("tf.output.hoodie_backend_service_name")
             command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services ${SERVICE_NAME} --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
@@ -86,7 +78,7 @@ brooklyn.catalog:
             description: Extracts the external port where the Backend is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
               SERVICE_NAME: $brooklyn:attributeWhenReady("tf.output.hoodie_backend_service_name")
             command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services ${SERVICE_NAME} --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
@@ -135,13 +127,7 @@ brooklyn.catalog:
         tf.search: 'true'
         tf.execution.mode: ssh
         tf.configuration.url: $brooklyn:external("terraform", "local.frontend.url")
-        tf_var.service_type: "NodePort"
-        tf_var.image_version: "1.0"
-        tf_var.hoodie_frontend_namespace: $brooklyn:location().config("namespace")
         tf_var.aws_account: $brooklyn:location().config("awsAccount") # not needed, but declared here to make type reusable
-        shell.env:
-          TF_VAR_hoodie_backend_host: $brooklyn:config("hoodie_backend_url")
-          TF_VAR_hoodie_backend_port: $brooklyn:config("hoodie_backend_port")
       brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
@@ -149,7 +135,7 @@ brooklyn.catalog:
             description: Extracts the external host where the Frontend is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
             command: kubectl get -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' services hoodie-frontend --namespace=${NAMESPACE_NAME}
         - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
           brooklyn.config:
@@ -157,7 +143,7 @@ brooklyn.catalog:
             description: Extracts the external port where the Frontend is available (using kubectl)
             targetType: string
             shell.env:
-              NAMESPACE_NAME: $brooklyn:location().config("namespace")
+              NAMESPACE_NAME: $brooklyn:attributeWhenReady("tf.output.namespace_name")
             command: kubectl get -o jsonpath='{.spec.ports[0].nodePort}' services hoodie-frontend --namespace=${NAMESPACE_NAME}
       brooklyn.enrichers:
         # publish the URL as a sensor; the GUI will pick this up (main.uri)

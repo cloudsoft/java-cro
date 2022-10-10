@@ -1,4 +1,4 @@
-resource "kubernetes_service_v1" "hoodie-frontend-service" {
+resource "kubernetes_service_v1" "hoodie_frontend_service" {
   metadata {
     namespace = var.hoodie_frontend_namespace
     name = "hoodie-frontend"
@@ -9,7 +9,7 @@ resource "kubernetes_service_v1" "hoodie-frontend-service" {
   }
   spec {
     selector = {
-      name = kubernetes_deployment_v1.hoodie-frontend-deployment.metadata.0.name
+      name = kubernetes_deployment_v1.hoodie_frontend_deployment.metadata.0.name
     }
     type = var.service_type
     port {
@@ -20,7 +20,7 @@ resource "kubernetes_service_v1" "hoodie-frontend-service" {
   }
 }
 
-resource "kubernetes_deployment_v1" "hoodie-frontend-deployment" {
+resource "kubernetes_deployment_v1" "hoodie_frontend_deployment" {
   metadata {
     namespace = var.hoodie_frontend_namespace
     name = "hoodie-frontend"

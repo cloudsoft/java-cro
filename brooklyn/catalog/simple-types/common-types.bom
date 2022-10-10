@@ -1,0 +1,49 @@
+brooklyn.catalog:
+  version: 0.0.1-SNAPSHOT
+  iconUrl: classpath://icons/hoodie-shop.png
+  publish:
+    name: K8S Hoodie Shop Types
+    description: Items specific to various Hoodie App tier for a Kubernetes cluster.
+
+  items:
+    # example with terraform config in blueprint
+    - id: namespace-tf
+      item:
+        type: terraform
+        name: 'Hoodie Shop :: Namespace'
+        iconUrl: classpath://icons/namespace.png
+        brooklyn.config:
+          tf.search: 'true'
+          tf.execution.mode: ssh
+          tf.configuration.contents: |
+            terraform {
+              required_version = ">= 1.1.7"
+            
+              required_providers {
+                kubernetes = {
+                  source = "hashicorp/kubernetes"
+                }
+              }
+            }
+            
+            provider "kubernetes" {
+              config_path = "~/.kube/config"
+            }
+            resource "random_id" "namespace_suffix" {
+              byte_length = 4
+            }
+            resource "kubernetes_namespace_v1" "hoodie_shop" {
+              metadata {
+                annotations = {
+                  name = "hoodie-shop-annotation"
+                }
+            
+                labels = {
+                  demo = "hoodie-db-namespace"
+                }
+                name = "java-cro-${random_id.namespace_suffix.hex}"
+              }
+            }
+            output "namespace_name" {
+               value = kubernetes_namespace_v1.hoodie_shop.metadata.0.name
+            }

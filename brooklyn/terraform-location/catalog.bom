@@ -15,4 +15,3 @@ brooklyn.catalog:
         iconUrl: classpath://icons/local-k8s.png
         brooklyn.config:
           awsAccount: $brooklyn:external("terraform", "aws.account")
-          namespace: java-cro
