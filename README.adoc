@@ -62,4 +62,6 @@ Get token for Dashboard authnetication
 kubectl -n kubernetes-dashboard create token admin-user --duration=48h
 ----
 
-These are a few simple kubernetes instructions. Each directory contains more resources, including the demo steps.
+These are a few simple Kubernetes instructions for running a cluster locally on Docker.
+
+Each directory in the main project contains more resources, including the demo steps.

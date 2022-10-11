@@ -25,13 +25,13 @@ case "${1}" in
   docker stop local-hoodie-db && docker rm local-hoodie-db
   ;;
 4)
-  echo " >> step 4: destroy database on local Kubernetes cluster"
+  echo " >> step 4: destroy database on local Kubernetes cluster, by deleting namespace"
   kubectl delete namespace hoodie-shop
   ;;
 5)
   echo " >> step 5: build & start the backend"
   cd backend
-  . /Users/iuliana/.sdkman/bin/sdkman-init.sh
+  . /Users/iuliana/.sdkman/bin/sdkman-init.sh # to interpret the .sdkmanrc file
   mvn
   cd ..
   echo "Starting the app ..."
@@ -39,7 +39,7 @@ case "${1}" in
   java -jar backend/target/backend.jar
   ;;
 6)
-  echo " >> step 6: build the NATIVE backend"
+  echo " >> step 6: build the NATIVE backend" # to interpret the .sdkmanrc file
   cd backend-native
   . /Users/iuliana/.sdkman/bin/sdkman-init.sh
   mvn package -Pnative -DskipTests
